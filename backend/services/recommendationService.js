@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 /**
  * Service để gọi Python Recommendation API
@@ -74,4 +74,4 @@ class RecommendationService {
   }
 }
 
-module.exports = new RecommendationService();
+export default new RecommendationService();

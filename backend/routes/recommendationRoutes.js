@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import recommendationService from '../services/recommendationService.js';
 import Movie from '../models/Movie.js';
-import { authenticate } from '../middleware/authMiddleware.js';
+import { authenticate } from '../middlewares/authMiddleware.js';
 
 // @route   GET /api/recommendations/personalized
 // @desc    Get personalized recommendations cho user hiện tại
