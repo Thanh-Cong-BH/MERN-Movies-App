@@ -91,7 +91,7 @@ interactionSchema.statics.getAverageRating = async function(movieId) {
   const result = await this.aggregate([
     { 
       $match: { 
-        movieId: mongoose.Types.ObjectId(movieId),
+        movieId: new mongoose.Types.ObjectId(movieId),  // ✅ Fixed: thêm 'new'
         interactionType: 'rating'
       } 
     },

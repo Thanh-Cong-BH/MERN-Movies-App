@@ -3,9 +3,19 @@ import axios from 'axios';
 // API URL - thay đổi theo backend của bạn
 const API_URL = 'http://localhost:3000/api/v1';
 
-// Lấy token từ localStorage
+// Lấy token từ localStorage (từ userInfo object)
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  try {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const parsed = JSON.parse(userInfo);
+      return parsed.token || null;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error parsing userInfo:', e);
+    return null;
+  }
 };
 
 // Config cho axios với token
@@ -15,7 +25,8 @@ const getAuthConfig = () => {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
-    }
+    },
+    withCredentials: true
   };
 };
 
@@ -32,7 +43,7 @@ class InteractionService {
       const sessionId = this.getOrCreateSessionId();
       
       const response = await axios.post(
-        `${API_URL}/interactions/view`,
+        `${API_URL}/interaction/view`,  // ✅ Fixed: interaction (không có s)
         {
           movieId,
           duration,
@@ -62,7 +73,7 @@ class InteractionService {
       }
 
       const response = await axios.post(
-        `${API_URL}/interactions/rate`,
+        `${API_URL}/interaction/rate`,  // ✅ Fixed: interaction (không có s)
         {
           movieId,
           rating
@@ -84,8 +95,8 @@ class InteractionService {
   async getUserInteractions(userId, type = null) {
     try {
       const url = type 
-        ? `${API_URL}/interactions/user/${userId}?type=${type}`
-        : `${API_URL}/interactions/user/${userId}`;
+        ? `${API_URL}/interaction/user/${userId}?type=${type}`  // ✅ Fixed
+        : `${API_URL}/interaction/user/${userId}`;  // ✅ Fixed
 
       const response = await axios.get(url, getAuthConfig());
       return response.data;
@@ -102,7 +113,7 @@ class InteractionService {
   async getMovieRating(movieId) {
     try {
       const response = await axios.get(
-        `${API_URL}/interaction/movie/${movieId}/rating`
+        `${API_URL}/interaction/movie/${movieId}/rating`  // ✅ Đã đúng
       );
       return response.data;
     } catch (error) {
@@ -118,7 +129,7 @@ class InteractionService {
   async deleteInteraction(interactionId) {
     try {
       const response = await axios.delete(
-        `${API_URL}/interactions/${interactionId}`,
+        `${API_URL}/interaction/${interactionId}`,  // ✅ Fixed
         getAuthConfig()
       );
       return response.data;
