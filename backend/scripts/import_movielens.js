@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const mongoose = require('mongoose');
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
+import mongoose from 'mongoose';
 
 // Import models
-const Movie = require('../models/Movie');
-const Genre = require('../models/Genre');
+import Movie from '../models/Movie.js';
+import Genre from '../models/Genre.js';
 
 /**
  * Import MovieLens 1M với schema tối giản
