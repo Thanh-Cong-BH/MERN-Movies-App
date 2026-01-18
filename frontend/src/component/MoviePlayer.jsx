@@ -3,18 +3,18 @@ import { useViewTracking } from '../hooks/useInteraction';
 import './MoviePlayer.css';
 
 const MoviePlayer = ({ movie }) => {
-  // Safety check: nếu movie undefined, return early
-  if (!movie || !movie._id) {
-    return null;
-  }
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const videoRef = useRef(null);
 
-  // Track view với custom hook
-  const { viewTracked, updateCompletionRate } = useViewTracking(movie._id, isPlaying);
+  // Track view với custom hook - PHẢI đặt trước mọi conditional return
+  const { viewTracked, updateCompletionRate } = useViewTracking(movie?._id, isPlaying);
+
+  // Safety check: nếu movie undefined, return sau khi hooks đã được gọi
+  if (!movie || !movie._id || !movie.videoUrl) {
+    return null;
+  }
 
   // Handle play/pause
   const handlePlayPause = () => {
@@ -66,11 +66,6 @@ const MoviePlayer = ({ movie }) => {
 
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-
-  // Nếu không có video URL, không hiển thị player
-  if (!movie.videoUrl) {
-    return null;
-  }
 
   return (
     <div className="movie-player">
