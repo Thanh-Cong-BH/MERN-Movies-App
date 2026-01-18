@@ -14,42 +14,25 @@ const RecommendationsSection = () => {
     fetchRecommendations();
   }, []);
 
-  // Helper function để lấy token từ userInfo
-  const getToken = () => {
-    try {
-      const userInfo = localStorage.getItem('userInfo');
-      if (userInfo) {
-        const parsed = JSON.parse(userInfo);
-        return parsed.token || null;
-      }
-      return null;
-    } catch (e) {
-      console.error('Error parsing userInfo:', e);
-      return null;
-    }
+  // Kiểm tra user đã login chưa (dựa vào userInfo trong localStorage)
+  const isLoggedIn = () => {
+    return !!localStorage.getItem('userInfo');
   };
 
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
       
-      // Lấy token từ userInfo
-      const token = getToken();
-      
-      console.log('Token found:', token ? 'Yes' : 'No');
-      
-      // Nếu không có token, load popular movies
-      if (!token) {
-        console.log('No token, loading popular movies...');
+      // Nếu chưa login, load popular movies
+      if (!isLoggedIn()) {
+        console.log('User not logged in, loading popular movies...');
         await loadPopularMovies();
         return;
       }
 
+      // Gọi API với withCredentials để gửi cookie jwt
       const response = await axios.get(`${API_URL}/recommendation/personalized`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        withCredentials: true
+        withCredentials: true  // ✅ Gửi cookie jwt
       });
 
       setRecommendations(response.data.data);
@@ -59,7 +42,7 @@ const RecommendationsSection = () => {
       console.error('Error fetching recommendations:', err);
       
       if (err.response?.status === 401) {
-        console.log('Unauthorized - token invalid or expired');
+        console.log('Unauthorized - session expired or invalid');
       }
       
       // Fallback đến popular movies
@@ -71,7 +54,9 @@ const RecommendationsSection = () => {
 
   const loadPopularMovies = async () => {
     try {
-      const response = await axios.get(`${API_URL}/recommendation/popular?limit=10`);
+      const response = await axios.get(`${API_URL}/recommendation/popular?limit=10`, {
+        withCredentials: true
+      });
       setRecommendations(response.data.data);
       setIsFallback(true);
       setError(null);

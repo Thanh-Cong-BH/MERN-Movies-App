@@ -3,47 +3,26 @@ import axios from 'axios';
 // API URL - thay đổi theo backend của bạn
 const API_URL = 'http://localhost:3000/api/v1';
 
-// Lấy token từ localStorage (từ userInfo object)
-const getAuthToken = () => {
-  try {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const parsed = JSON.parse(userInfo);
-      return parsed.token || null;
-    }
-    return null;
-  } catch (e) {
-    console.error('Error parsing userInfo:', e);
-    return null;
-  }
-};
-
-// Config cho axios với token
+// Config cho axios - dùng cookie (withCredentials) thay vì header token
 const getAuthConfig = () => {
-  const token = getAuthToken();
   return {
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    withCredentials: true
+    withCredentials: true  // ✅ Quan trọng: gửi cookie jwt với request
   };
 };
 
 class InteractionService {
   /**
    * Track khi user xem phim
-   * @param {string} movieId - ID của phim
-   * @param {number} duration - Thời gian xem (giây)
-   * @param {number} completionRate - Phần trăm phim đã xem (0-100)
-   * @param {string} deviceType - Loại thiết bị: 'mobile', 'desktop', 'tablet'
    */
   async trackView(movieId, duration = 0, completionRate = 0, deviceType = 'desktop') {
     try {
       const sessionId = this.getOrCreateSessionId();
       
       const response = await axios.post(
-        `${API_URL}/interaction/view`,  // ✅ Fixed: interaction (không có s)
+        `${API_URL}/interaction/view`,
         {
           movieId,
           duration,
@@ -63,8 +42,6 @@ class InteractionService {
 
   /**
    * Track khi user đánh giá phim
-   * @param {string} movieId - ID của phim
-   * @param {number} rating - Điểm đánh giá (1-5)
    */
   async trackRating(movieId, rating) {
     try {
@@ -73,7 +50,7 @@ class InteractionService {
       }
 
       const response = await axios.post(
-        `${API_URL}/interaction/rate`,  // ✅ Fixed: interaction (không có s)
+        `${API_URL}/interaction/rate`,
         {
           movieId,
           rating
@@ -90,13 +67,12 @@ class InteractionService {
 
   /**
    * Lấy tất cả interactions của user hiện tại
-   * @param {string} type - Optional: 'view' hoặc 'rating'
    */
   async getUserInteractions(userId, type = null) {
     try {
       const url = type 
-        ? `${API_URL}/interaction/user/${userId}?type=${type}`  // ✅ Fixed
-        : `${API_URL}/interaction/user/${userId}`;  // ✅ Fixed
+        ? `${API_URL}/interaction/user/${userId}?type=${type}`
+        : `${API_URL}/interaction/user/${userId}`;
 
       const response = await axios.get(url, getAuthConfig());
       return response.data;
@@ -108,12 +84,12 @@ class InteractionService {
 
   /**
    * Lấy rating trung bình của một phim
-   * @param {string} movieId - ID của phim
    */
   async getMovieRating(movieId) {
     try {
       const response = await axios.get(
-        `${API_URL}/interaction/movie/${movieId}/rating`  // ✅ Đã đúng
+        `${API_URL}/interaction/movie/${movieId}/rating`,
+        { withCredentials: true }
       );
       return response.data;
     } catch (error) {
@@ -123,13 +99,12 @@ class InteractionService {
   }
 
   /**
-   * Xóa một interaction (ví dụ: xóa rating)
-   * @param {string} interactionId - ID của interaction
+   * Xóa một interaction
    */
   async deleteInteraction(interactionId) {
     try {
       const response = await axios.delete(
-        `${API_URL}/interaction/${interactionId}`,  // ✅ Fixed
+        `${API_URL}/interaction/${interactionId}`,
         getAuthConfig()
       );
       return response.data;
@@ -139,23 +114,15 @@ class InteractionService {
     }
   }
 
-  /**
-   * Lấy hoặc tạo session ID
-   */
   getOrCreateSessionId() {
     let sessionId = sessionStorage.getItem('sessionId');
-    
     if (!sessionId) {
       sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       sessionStorage.setItem('sessionId', sessionId);
     }
-    
     return sessionId;
   }
 
-  /**
-   * Detect device type
-   */
   getDeviceType() {
     const ua = navigator.userAgent;
     if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {

@@ -4,8 +4,16 @@ import User from '../models/User.js';
 // Middleware xác thực JWT token
 const authenticate = async (req, res, next) => {
   try {
-    // Lấy token từ header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // ✅ Lấy token từ cookie 'jwt' HOẶC từ header Authorization
+    let token = req.cookies?.jwt;  // Đọc từ cookie trước
+    
+    // Fallback: nếu không có cookie, thử lấy từ header
+    if (!token) {
+      const authHeader = req.header('Authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.replace('Bearer ', '');
+      }
+    }
 
     if (!token) {
       return res.status(401).json({
@@ -48,7 +56,7 @@ const authorizeAdmin = async (req, res, next) => {
     // Chạy auth middleware trước
     await authenticate(req, res, () => {});
 
-    if (req.user.role !== 'admin') {
+    if (req.user && req.user.role !== 'admin' && !req.user.isAdmin) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. Admin privileges required.'
