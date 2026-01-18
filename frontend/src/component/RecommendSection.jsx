@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './RecommendSection.css';
 
-const API_URL = 'http://localhost:3000/api/v1'; // Thay đổi theo backend của bạn
+const API_URL = 'http://localhost:3000/api/v1';
 
 const RecommendationsSection = () => {
   const [recommendations, setRecommendations] = useState([]);
@@ -14,15 +14,42 @@ const RecommendationsSection = () => {
     fetchRecommendations();
   }, []);
 
+  // Helper function để lấy token từ userInfo
+  const getToken = () => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        const parsed = JSON.parse(userInfo);
+        return parsed.token || null;
+      }
+      return null;
+    } catch (e) {
+      console.error('Error parsing userInfo:', e);
+      return null;
+    }
+  };
+
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       
+      // Lấy token từ userInfo
+      const token = getToken();
+      
+      console.log('Token found:', token ? 'Yes' : 'No');
+      
+      // Nếu không có token, load popular movies
+      if (!token) {
+        console.log('No token, loading popular movies...');
+        await loadPopularMovies();
+        return;
+      }
+
       const response = await axios.get(`${API_URL}/recommendation/personalized`, {
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        withCredentials: true
       });
 
       setRecommendations(response.data.data);
@@ -30,18 +57,28 @@ const RecommendationsSection = () => {
       setError(null);
     } catch (err) {
       console.error('Error fetching recommendations:', err);
-      setError('Unable to load recommendations');
       
-      // Fallback: load popular movies
-      try {
-        const response = await axios.get(`${API_URL}/recommendation/popular?limit=10`);
-        setRecommendations(response.data.data);
-        setIsFallback(true);
-      } catch (fallbackErr) {
-        console.error('Error loading popular movies:', fallbackErr);
+      if (err.response?.status === 401) {
+        console.log('Unauthorized - token invalid or expired');
       }
+      
+      // Fallback đến popular movies
+      await loadPopularMovies();
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPopularMovies = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/recommendation/popular?limit=10`);
+      setRecommendations(response.data.data);
+      setIsFallback(true);
+      setError(null);
+    } catch (fallbackErr) {
+      console.error('Error loading popular movies:', fallbackErr);
+      setError('Unable to load movies');
+      setRecommendations([]);
     }
   };
 
