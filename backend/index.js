@@ -12,7 +12,8 @@ import genreRoutes from "./routes/genreRoutes.js";
 import moviesRoutes from "./routes/moviesRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import interactionRoutes from "./routes/interactionRoutes.js";
-import recommendationRoutes from "./routes/recommendationRoutes.js"
+import recommendationRoutes from "./routes/recommendationRoutes.js";
+import tmdbRoutes from "./routes/tmdbRoutes.js";  // NEW
 
 // Configuration
 dotenv.config();
@@ -20,14 +21,14 @@ connectDB();
 
 const app = express();
 
-// middlewares
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true
-}))
+}));
 
 const PORT = process.env.PORT || 3000;
 
@@ -38,6 +39,7 @@ app.use("/api/v1/movies", moviesRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/interaction", interactionRoutes);
 app.use("/api/v1/recommendation", recommendationRoutes);
+app.use("/api/v1/tmdb", tmdbRoutes);  // NEW
 
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
