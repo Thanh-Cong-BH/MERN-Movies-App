@@ -1,55 +1,36 @@
 # ============================================
 # MERN Movies App - Docker Compose
-# ============================================
-# Chạy: docker-compose up --build
-# Dừng: docker-compose down
+# Sử dụng MongoDB LOCAL
 # ============================================
 
 version: '3.8'
 
 services:
-  # ==================== MongoDB ====================
-  mongodb:
-    image: mongo:7.0
-    container_name: movies-mongodb
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=movies-app
-    networks:
-      - movies-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # ==================== Backend (Node.js) ====================
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.backend
     container_name: movies-backend
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
-      - ./backend/uploads:/app/uploads
+      - ./backend:/app/backend
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - backend_node_modules:/app/node_modules
+      - ./uploads:/app/uploads
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - MONGO_URI=mongodb://mongodb:27017/movies-app
-      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      - TMDB_API_KEY=${TMDB_API_KEY}
+      - MONGO_URI=mongodb://host.docker.internal:27017/moviesApp
+      # QUAN TRỌNG: Dùng cùng JWT_SECRET với file .env của bạn
+      - JWT_SECRET=rgfiygf384fi3giruwhcvibgwincwjinlwiqepcefbg4
+      - TMDB_API_KEY=f79fd3d76a7115ed1a993e33250b0f36
       - RECOMMENDATION_API_URL=http://recommendation:8000
-    depends_on:
-      mongodb:
-        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - movies-network
 
@@ -64,7 +45,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
     environment:
       - VITE_API_URL=http://localhost:3000
     depends_on:
@@ -75,27 +56,20 @@ services:
   # ==================== Recommendation Service (Python) ====================
   recommendation:
     build:
-      context: ./recommendation-service
+      context: ./recommend
       dockerfile: Dockerfile
     container_name: movies-recommendation
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
-      - ./recommendation-service:/app
-      - ./recommendation-service/models:/app/models
+      - ./recommend:/app
+      - ./recommend/models:/app/models
     environment:
       - MODEL_PATH=/app/models/lightgcn_direct.pt
       - MAPPING_PATH=/app/models/id_mappings.pkl
-    depends_on:
-      - mongodb
     networks:
       - movies-network
-    healthcheck:
-      test: curl -f http://localhost:8000/health || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 # ==================== Networks ====================
 networks:
@@ -104,5 +78,5 @@ networks:
 
 # ==================== Volumes ====================
 volumes:
-  mongodb_data:
-    driver: local
+  backend_node_modules:
+  frontend_node_modules:

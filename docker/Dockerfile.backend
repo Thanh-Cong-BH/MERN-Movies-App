@@ -1,0 +1,29 @@
+# ============================================
+# Backend Dockerfile
+# Uses root package.json (not backend/package.json)
+# ============================================
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Add build tools for native npm packages
+RUN apk add --no-cache python3 make g++
+
+# Copy package files from ROOT
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy backend folder
+COPY backend/ ./backend/
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Expose port
+EXPOSE 3000
+
+# Start backend using nodemon
+CMD ["npx", "nodemon", "backend/index.js"]
