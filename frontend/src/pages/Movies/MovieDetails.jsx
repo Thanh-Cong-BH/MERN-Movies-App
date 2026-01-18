@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 import {
   useGetSpecificMovieQuery,
   useAddMovieReviewMutation,
-} from "../../redux/api/movies";
-import MovieTabs from "./MovieTabs";
+} from "../../redux/api/movies.js";
+import MovieTabs from "./MovieTabs.jsx";
+import MoviePlayer from "../../component/MoviePlayer.jsx";
+import StarRating from "../../component/StarRating.jsx";
 
 const MovieDetails = () => {
   const { id: movieId } = useParams();
@@ -68,6 +70,7 @@ const MovieDetails = () => {
               Releasing Date: {movie?.year}
             </p>
 
+
             <div>
               {movie?.cast.map((c) => (
                 <ul key={c._id}>
@@ -77,6 +80,11 @@ const MovieDetails = () => {
             </div>
           </div>
         </div>
+        <div>
+              <MoviePlayer movie={movie}></MoviePlayer>
+              <StarRating  movieId={movieId} size="large"></StarRating>
+        </div>
+
 
         <div className="container ml-[20rem]">
           <MovieTabs

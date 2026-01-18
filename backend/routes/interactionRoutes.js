@@ -1,12 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Interaction = require('../models/Interaction');
-const { auth } = require('../middleware/auth'); // Giả sử đã có auth middleware
+import Interaction from '../models/Interaction.js';
+import { authenticate } from '../middlewares/authMiddleware.js'; // Giả sử đã có auth middleware
 
 // @route   POST /api/interactions/view
 // @desc    Track khi user xem phim
 // @access  Private
-router.post('/view', auth, async (req, res) => {
+router.post('/view', authenticate, async (req, res) => {
   try {
     const { movieId, duration, completionRate, deviceType, sessionId } = req.body;
     const userId = req.user._id; // Từ auth middleware
@@ -50,7 +50,7 @@ router.post('/view', auth, async (req, res) => {
 // @route   POST /api/interactions/rate
 // @desc    Track khi user đánh giá phim
 // @access  Private
-router.post('/rate', auth, async (req, res) => {
+router.post('/rate', authenticate, async (req, res) => {
   try {
     const { movieId, rating } = req.body;
     const userId = req.user._id;
@@ -105,7 +105,7 @@ router.post('/rate', auth, async (req, res) => {
 // @route   GET /api/interactions/user/:userId
 // @desc    Lấy tất cả interactions của một user
 // @access  Private
-router.get('/user/:userId', auth, async (req, res) => {
+router.get('/user/:userId', authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
     const { type } = req.query; // Optional: 'view' hoặc 'rating'
@@ -195,7 +195,7 @@ router.get('/movie/:movieId/rating', async (req, res) => {
 // @route   GET /api/interactions/export
 // @desc    Export interactions data cho ML training
 // @access  Private (Admin only)
-router.get('/export', auth, async (req, res) => {
+router.get('/export', authenticate, async (req, res) => {
   try {
     // Kiểm tra quyền admin
     if (req.user.role !== 'admin') {
@@ -237,7 +237,7 @@ router.get('/export', auth, async (req, res) => {
 // @route   GET /api/interactions/stats
 // @desc    Lấy thống kê tổng quan về interactions
 // @access  Private (Admin only)
-router.get('/stats', auth, async (req, res) => {
+router.get('/stats', authenticate, async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({
@@ -279,7 +279,7 @@ router.get('/stats', auth, async (req, res) => {
 // @route   DELETE /api/interactions/:id
 // @desc    Xóa một interaction (ví dụ: user muốn xóa rating)
 // @access  Private
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const interaction = await Interaction.findById(id);

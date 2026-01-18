@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
 // Middleware xác thực JWT token
-const auth = async (req, res, next) => {
+const authenticate = async (req, res, next) => {
   try {
     // Lấy token từ header
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -43,10 +43,10 @@ const auth = async (req, res, next) => {
 };
 
 // Middleware kiểm tra quyền admin
-const adminAuth = async (req, res, next) => {
+const authorizeAdmin = async (req, res, next) => {
   try {
     // Chạy auth middleware trước
-    await auth(req, res, () => {});
+    await authenticate(req, res, () => {});
 
     if (req.user.role !== 'admin') {
       return res.status(403).json({
@@ -65,4 +65,4 @@ const adminAuth = async (req, res, next) => {
   }
 };
 
-export { auth, adminAuth };
+export { authenticate, authorizeAdmin };
