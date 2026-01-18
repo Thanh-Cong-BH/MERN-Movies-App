@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRating } from '../hooks/useInteraction';
+import { useRating } from '../hooks/useInteraction.js';
 import './StarRating.css';
 
 const StarRating = ({ movieId, size = 'medium', showStats = true, readOnly = false }) => {

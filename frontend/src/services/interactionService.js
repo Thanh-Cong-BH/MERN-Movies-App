@@ -102,7 +102,7 @@ class InteractionService {
   async getMovieRating(movieId) {
     try {
       const response = await axios.get(
-        `${API_URL}/interactions/movie/${movieId}/rating`
+        `${API_URL}/interaction/movie/${movieId}/rating`
       );
       return response.data;
     } catch (error) {

@@ -1,3 +1,4 @@
+import RecommendationsSection from "../component/RecommendSection.jsx";
 import Header from "./Movies/Header";
 import MoviesContainerPage from "./Movies/MoviesContainerPage";
 
@@ -7,6 +8,7 @@ const Home = () => {
       <Header />
 
       <section className="mt-[10rem]">
+        <RecommendationsSection />
         <MoviesContainerPage />
       </section>
     </>

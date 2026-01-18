@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './RecommendationsSection.css';
+import './RecommendSection.css';
 
 const API_URL = 'http://localhost:3000/api/v1'; // Thay đổi theo backend của bạn
 
@@ -19,7 +19,7 @@ const RecommendationsSection = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const response = await axios.get(`${API_URL}/recommendations/personalized`, {
+      const response = await axios.get(`${API_URL}/recommendation/personalized`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ const RecommendationsSection = () => {
       
       // Fallback: load popular movies
       try {
-        const response = await axios.get(`${API_URL}/recommendations/popular?limit=10`);
+        const response = await axios.get(`${API_URL}/recommendation/popular?limit=10`);
         setRecommendations(response.data.data);
         setIsFallback(true);
       } catch (fallbackErr) {
