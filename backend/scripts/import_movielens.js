@@ -130,7 +130,7 @@ async function main() {
   
   try {
     await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/movieApps',
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/moviesApp',
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
     console.log('✅ Connected to MongoDB\n');
@@ -207,3 +207,11 @@ async function main() {
 }
 
 main();
+
+
+
+
+
+
+
+

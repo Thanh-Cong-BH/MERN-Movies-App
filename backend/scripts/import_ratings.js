@@ -2,6 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
 import mongoose from 'mongoose';
+import Movie from '../models/Movie.js'; 
+import Interaction from '../models/Interaction.js';
+
+import dotenv from 'dotenv';
 
 
 /**
@@ -147,7 +151,7 @@ async function main() {
     // Connect to MongoDB
     console.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/mern-movies',
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/moviesApp',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -163,7 +167,7 @@ async function main() {
     console.log('📊 Final Summary:');
     console.log('═'.repeat(50));
     
-    const Interaction = mongoose.model('Interaction');
+    const Interaction = mongoose.model('interactions');
     const totalInteractions = await Interaction.countDocuments({ interactionType: 'rating' });
     const uniqueUsers = await Interaction.distinct('userId', { interactionType: 'rating' });
     const uniqueMovies = await Interaction.distinct('movieId', { interactionType: 'rating' });
@@ -204,3 +208,11 @@ async function main() {
 
 // Run
 main();
+
+
+
+
+
+
+
+
