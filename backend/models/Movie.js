@@ -17,6 +17,7 @@ const reviewSchema = mongoose.Schema(
 
 const movieSchema = new mongoose.Schema(
   {
+    // Basic info (giữ nguyên từ schema gốc)
     name: { type: String, required: true },
     image: { type: String },
     year: { type: Number, required: true },
@@ -25,10 +26,32 @@ const movieSchema = new mongoose.Schema(
     cast: [{ type: String }],
     reviews: [reviewSchema],
     numReviews: { type: Number, required: true, default: 0 },
-    createdAt: { type: Date, default: Date.now },
+    
+    // MovieLens compatibility - CHỈ THÊM 3 FIELDS NÀY
+    movieLensId: {
+      type: Number,
+      unique: true,
+      sparse: true,
+      index: true
+    },
+    
+    // Cached stats từ Interaction collection (tự động update)
+    averageRating: {
+      type: Number,
+      default: 0
+    },
+    
+    totalRatings: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
 
-const Movie = mongoose.model("Movie", movieSchema);
+// Index cho search
+movieSchema.index({ name: 'text', detail: 'text' });
+movieSchema.index({ movieLensId: 1 });
+
+const Movie = mongoose.model("Movie", movieSchema, 'movies');
 export default Movie;
