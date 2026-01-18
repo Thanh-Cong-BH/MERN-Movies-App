@@ -1,0 +1,268 @@
+.movie-player {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.play-button {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.play-button svg {
+  width: 40px;
+  height: 40px;
+  color: #000;
+  margin-left: 4px;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  background-color: #fff;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-container:hover .video-controls {
+  opacity: 1;
+}
+
+.control-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.control-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.control-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.time-display {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.progress-bar-container {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.progress-bar:hover {
+  height: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #ff0000;
+  transition: width 0.1s ease;
+  border-radius: 2px;
+}
+
+.tracking-indicator {
+  color: #4ade80;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: rgba(74, 222, 128, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Movie info section */
+.movie-info {
+  margin-top: 24px;
+}
+
+.movie-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1a202c;
+  margin-bottom: 12px;
+}
+
+.movie-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #4a5568;
+  margin-bottom: 24px;
+}
+
+.movie-rating-section {
+  padding: 20px;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.movie-rating-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.movie-metadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background-color: #edf2f7;
+  border-radius: 8px;
+}
+
+.metadata-item {
+  display: flex;
+  gap: 8px;
+}
+
+.metadata-label {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.metadata-value {
+  color: #2d3748;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .movie-player {
+    padding: 12px;
+  }
+
+  .play-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  .play-button svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .movie-title {
+    font-size: 24px;
+  }
+
+  .video-controls {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .control-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .time-display {
+    font-size: 12px;
+  }
+
+  .movie-metadata {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .movie-title {
+    color: #e2e8f0;
+  }
+
+  .movie-description {
+    color: #a0aec0;
+  }
+
+  .movie-rating-section {
+    background-color: #2d3748;
+  }
+
+  .movie-rating-section h3 {
+    color: #e2e8f0;
+  }
+
+  .movie-metadata {
+    background-color: #2d3748;
+  }
+
+  .metadata-label,
+  .metadata-value {
+    color: #e2e8f0;
+  }
+}
