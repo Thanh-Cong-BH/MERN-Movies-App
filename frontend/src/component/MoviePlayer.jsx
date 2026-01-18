@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useViewTracking } from '../hooks/useInteraction';
-import StarRating from './StarRating';
 import './MoviePlayer.css';
 
 const MoviePlayer = ({ movie }) => {
   // Safety check: nếu movie undefined, return early
   if (!movie || !movie._id) {
-    return <div className="movie-player">Loading movie...</div>;
+    return null;
   }
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -68,6 +67,11 @@ const MoviePlayer = ({ movie }) => {
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // Nếu không có video URL, không hiển thị player
+  if (!movie.videoUrl) {
+    return null;
+  }
+
   return (
     <div className="movie-player">
       <div className="video-container">
@@ -127,34 +131,6 @@ const MoviePlayer = ({ movie }) => {
               ✓
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Movie info */}
-      <div className="movie-info">
-        <h2 className="movie-title">{movie.title}</h2>
-        <p className="movie-description">{movie.description}</p>
-        
-        {/* Rating component */}
-        <div className="movie-rating-section">
-          <h3>Rate this movie</h3>
-          <StarRating movieId={movie._id} size="large" showStats={true} />
-        </div>
-
-        {/* Movie metadata */}
-        <div className="movie-metadata">
-          <div className="metadata-item">
-            <span className="metadata-label">Genre:</span>
-            <span className="metadata-value">{movie.genre}</span>
-          </div>
-          <div className="metadata-item">
-            <span className="metadata-label">Year:</span>
-            <span className="metadata-value">{movie.year}</span>
-          </div>
-          <div className="metadata-item">
-            <span className="metadata-label">Duration:</span>
-            <span className="metadata-value">{movie.duration} min</span>
-          </div>
         </div>
       </div>
     </div>
