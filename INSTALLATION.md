@@ -13,14 +13,7 @@
 
 ## 🚀 Cài đặt
 
-### Bước 1: Clone project
-
-```bash
-git clone https://github.com/Thanh-Cong-BH/MERN-Movies-App.git
-cd MERN-Movies-App
-```
-
-### Bước 2: Cài đặt dependencies
+### Bước 1: Cài đặt dependencies
 
 ```bash
 # Backend (ở root folder)
@@ -37,7 +30,7 @@ pip install -r requirements.txt
 cd ..
 ```
 
-### Bước 3: Cấu hình môi trường
+### Bước 2: Cấu hình môi trường
 
 Tạo file `.env` ở thư mục root:
 
@@ -55,7 +48,7 @@ TMDB_API_KEY=your-tmdb-api-key
 RECOMMENDATION_API_URL=http://localhost:8000
 ```
 
-### Bước 4: Khởi động MongoDB
+### Bước 3: Khởi động MongoDB
 
 ```bash
 # Windows
@@ -277,13 +270,3 @@ db.users.insertOne({
 3. **Backup database** thường xuyên
 4. **Sử dụng HTTPS** cho production
 5. **Đặt rate limit** cho API
-
----
-
-## 📞 Hỗ trợ
-
-Nếu gặp vấn đề, vui lòng tạo Issue trên GitHub hoặc liên hệ qua email.
-
----
-
-**Happy coding! 🚀**
